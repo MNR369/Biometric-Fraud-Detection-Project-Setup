@@ -1,0 +1,38 @@
+## 🛡️ Add CodeQL Security Analysis Workflow
+
+### Overview
+
+This pull request adds a GitHub CodeQL security-analysis workflow to the
+Biometric Fraud Detection Project.
+
+The workflow is designed to provide automated static security analysis of
+the project's Python source code and integrate security checks directly
+into the pull-request and main-branch development lifecycle.
+
+### Security Coverage
+
+The workflow will:
+
+- Analyze Python source code with GitHub CodeQL
+- Use the `security-extended` query suite
+- Run automatically on pull requests targeting `main`
+- Run automatically on pushes to `main`
+- Perform a scheduled weekly security analysis
+- Publish CodeQL findings through GitHub Code Scanning
+
+### Workflow
+
+```text
+Pull Request / Push
+        ↓
+GitHub Actions
+        ↓
+CodeQL Initialization
+        ↓
+Python Security Analysis
+        ↓
+Security-Extended Queries
+        ↓
+Code Scanning Results
+        ↓
+Review / Remediation
