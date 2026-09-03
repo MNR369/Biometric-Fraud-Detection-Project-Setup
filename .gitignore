@@ -1,4 +1,2 @@
 # Google App Engine generated folder
-appengine-generated/git status
-git branch -a
-git log --oneline --graph --decorate -8
+appengine-generated/
