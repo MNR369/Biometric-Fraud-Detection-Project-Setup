@@ -38,3 +38,22 @@ print(assessment.classification)
 ```
 
 Invalid observations raise `InvalidObservationError`.
+
+## Incident requests
+
+`IncidentRequest` provides an immutable, validated representation of the four
+inputs accepted by `BiometricFraudDetector.assess`. The probability fields
+(`match_score`, `liveness_score`, and `device_risk`) must be finite values in
+`[0, 1]`; `attempts` must be a non-negative integer. Invalid values raise
+`InvalidObservationError`.
+
+```python
+from biometric_fraud_detection import IncidentRequest
+
+request = IncidentRequest(
+    match_score=0.98,
+    liveness_score=0.97,
+    attempts=1,
+    device_risk=0.05,
+)
+```

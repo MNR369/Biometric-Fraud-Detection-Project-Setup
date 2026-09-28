@@ -27,11 +27,27 @@ class InvalidObservationError(ValueError):
     """Raised when an observation contains invalid values."""
 
 
+@dataclass(frozen=True)
+class IncidentRequest:
+    """Validated inputs for assessing a biometric fraud incident."""
+
+    match_score: float
+    liveness_score: float
+    attempts: int
+    device_risk: float
+
+    def __post_init__(self) -> None:
+        _validate_probability(self.match_score, "match_score")
+        _validate_probability(self.liveness_score, "liveness_score")
+        _validate_attempts(self.attempts)
+        _validate_probability(self.device_risk, "device_risk")
+
+
 class BiometricFraudDetector:
     """Calculate a deterministic fraud risk score from biometric signals."""
 
     def __init__(self, fraud_threshold: float = 0.70) -> None:
-        self._validate_probability(fraud_threshold, "fraud_threshold")
+        _validate_probability(fraud_threshold, "fraud_threshold")
         self.fraud_threshold = fraud_threshold
 
     def assess(
@@ -42,10 +58,10 @@ class BiometricFraudDetector:
         device_risk: float,
     ) -> FraudAssessment:
         """Assess observations and return their risk score and classification."""
-        self._validate_probability(match_score, "match_score")
-        self._validate_probability(liveness_score, "liveness_score")
-        self._validate_attempts(attempts)
-        self._validate_probability(device_risk, "device_risk")
+        _validate_probability(match_score, "match_score")
+        _validate_probability(liveness_score, "liveness_score")
+        _validate_attempts(attempts)
+        _validate_probability(device_risk, "device_risk")
 
         risk_score = (
             0.45 * (1 - match_score)
@@ -68,14 +84,14 @@ class BiometricFraudDetector:
             classification=classification,
         )
 
-    @staticmethod
-    def _validate_probability(value: float, name: str) -> None:
-        if isinstance(value, bool) or not isinstance(value, (int, float)):
-            raise InvalidObservationError(f"{name} must be a finite value in [0, 1]")
-        if not math.isfinite(value) or not 0 <= value <= 1:
-            raise InvalidObservationError(f"{name} must be a finite value in [0, 1]")
 
-    @staticmethod
-    def _validate_attempts(attempts: int) -> None:
-        if isinstance(attempts, bool) or not isinstance(attempts, Integral) or attempts < 0:
-            raise InvalidObservationError("attempts must be a non-negative integer")
+def _validate_probability(value: float, name: str) -> None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise InvalidObservationError(f"{name} must be a finite value in [0, 1]")
+    if not math.isfinite(value) or not 0 <= value <= 1:
+        raise InvalidObservationError(f"{name} must be a finite value in [0, 1]")
+
+
+def _validate_attempts(attempts: int) -> None:
+    if isinstance(attempts, bool) or not isinstance(attempts, Integral) or attempts < 0:
+        raise InvalidObservationError("attempts must be a non-negative integer")
